@@ -1,0 +1,7 @@
+{
+  "name": "Afny AI: Japanese Language Pal",
+  "description": "An AI-powered chatbot to practice Japanese conversation with voice and text, featuring translations and daily vocabulary to aid your learning journey. Anime-inspired pink and blue theme.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
