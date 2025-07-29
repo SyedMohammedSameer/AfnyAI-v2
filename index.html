@@ -1,60 +1,1437 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Afny AI - Sakura Chat</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      // Initialize Tailwind CSS dark mode
-      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    </script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Sakura AI - Enhanced Experience</title>
     <style>
-      body { 
-        margin: 0; 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; 
-        -webkit-font-smoothing: antialiased; 
-        -moz-osx-font-smoothing: grayscale; 
-      }
-      /* Light scrollbar */
-      .chat-scrollbar::-webkit-scrollbar { width: 8px; }
-      .chat-scrollbar::-webkit-scrollbar-thumb { background-color: #F472B6; /* Pink-500 */ border-radius: 4px; }
-      .chat-scrollbar::-webkit-scrollbar-track { background-color: #FBCFE8; /* Pink-100 */ }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      /* Dark scrollbar */
-      .dark .chat-scrollbar::-webkit-scrollbar-thumb { background-color: #db2777; /* Pink-600 for dark */ }
-      .dark .chat-scrollbar::-webkit-scrollbar-track { background-color: #334155; /* Slate-700 for dark */ }
+        :root {
+            --primary-pink: #ff6b9d;
+            --secondary-pink: #ff8fab;
+            --accent-blue: #4ecdc4;
+            --deep-purple: #6366f1;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #ff6b9d 0%, #4ecdc4 100%);
+            --gradient-3: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
 
-      /* Ensure root takes full height for gradient */
-      html, body, #root {
-        height: 100%;
-      }
+        [data-theme="dark"] {
+            --gradient-1: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --gradient-2: linear-gradient(135deg, #c2185b 0%, #1565c0 100%);
+            --gradient-3: linear-gradient(135deg, #263238 0%, #37474f 100%);
+            --glass-bg: rgba(0, 0, 0, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 35px 60px -12px rgba(0, 0, 0, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        [data-theme="dark"] .particle {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="dark"] .welcome-screen {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff6b9d 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { width: 20px; height: 20px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 15px; height: 15px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 25px; height: 25px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 18px; height: 18px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 22px; height: 22px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 16px; height: 16px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 24px; height: 24px; left: 70%; animation-delay: 0.5s; }
+        .particle:nth-child(8) { width: 19px; height: 19px; left: 80%; animation-delay: 1.5s; }
+        .particle:nth-child(9) { width: 21px; height: 21px; left: 90%; animation-delay: 2.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            50% { transform: translateY(-10px) rotate(180deg); opacity: 0.8; }
+        }
+
+        /* Main container */
+        .app-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header with glassmorphism */
+        .header {
+            backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse 3s infinite;
+            background-image: url('/assets/images/sakura-avatar.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 157, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 107, 157, 0.6); }
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--text-primary), #ff6b9d, #4ecdc4);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .title-section p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            font-size: 1.2rem;
+            min-width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Word of the day */
+        .word-of-day {
+            margin: 2rem;
+            padding: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .word-of-day::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s;
+        }
+
+        .word-of-day:hover::before {
+            left: 100%;
+        }
+
+        .word-of-day:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .word-title {
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-main {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .word-japanese {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        .word-reading {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .word-meaning {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .word-example {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .example-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-japanese {
+            color: #4ecdc4;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .example-english {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* Chat container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 0 2rem 2rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .messages-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .messages-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-area::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 157, 0.5);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .messages-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 107, 157, 0.8);
+        }
+
+        /* Message bubbles */
+        .message {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            animation: messageSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .message-avatar.ai {
+            background-image: url('/assets/images/sakura-avatar.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .message-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .message-content {
+            max-width: 70%;
+            position: relative;
+        }
+
+        .message-bubble {
+            padding: 1.5rem 2rem;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .message-bubble:hover::before {
+            left: 100%;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
+            color: white;
+        }
+
+        .message.ai .message-bubble {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.8), rgba(78, 205, 196, 0.8));
+            color: white;
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .japanese-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .english-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-style: italic;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .speak-button {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .message-content:hover .speak-button {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .speak-button:hover {
+            background: #ff6b9d;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Loading animation */
+        .loading-message {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            animation: messageSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .loading-bubble {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.6), rgba(78, 205, 196, 0.6));
+            padding: 1.5rem 2rem;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            animation: loadingBounce 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes loadingBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-container:focus-within {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ff6b9d;
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+        }
+
+        .voice-button, .send-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .voice-button {
+            background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+            color: white;
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        .voice-button:active {
+            transform: scale(0.95);
+        }
+
+        .voice-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .voice-button.recording::before {
+            width: 100%;
+            height: 100%;
+            animation: pulse-record 1s infinite;
+        }
+
+        @keyframes pulse-record {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .message-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .title-section h1 {
+                font-size: 2rem;
+            }
+
+            .word-of-day, .chat-container {
+                margin: 1rem;
+            }
+
+            .word-japanese {
+                font-size: 2.5rem;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .messages-area {
+                padding: 1rem;
+            }
+
+            .input-area {
+                padding: 1rem;
+            }
+        }
+
+        /* Error states */
+        .error-message {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 127, 0.8));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            margin: 1rem 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            animation: errorSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes errorSlide {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .error-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 1rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .error-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Welcome screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff6b9d 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .welcome-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.9);
+        }
+
+        .welcome-logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: welcomeBounce 2s infinite;
+            width: 80px;
+            height: 80px;
+            background-image: url('/assets/images/sakura-avatar.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-loading {
+            display: flex;
+            gap: 8px;
+        }
+
+        .welcome-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            animation: welcomeLoading 1.4s infinite ease-in-out;
+        }
+
+        .welcome-dot:nth-child(1) { animation-delay: -0.32s; }
+        .welcome-dot:nth-child(2) { animation-delay: -0.16s; }
+        .welcome-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes welcomeBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes welcomeLoading {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.1.0",
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.0.0"
-  }
-}
-</script>
 </head>
-  <body class="bg-pink-100 dark:bg-slate-900">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <!-- 
-      IMPORTANT: Make sure to place your avatar image at public/assets/images/sakura-avatar.png
-      For example, if your public folder is the root of your web server, the path would be /assets/images/sakura-avatar.png
-    -->
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
-</html><link rel="stylesheet" href="index.css">
-<script src="index.tsx" type="module"></script>
+<body>
+    <!-- Background particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Welcome screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-logo"></div>
+        <h1 class="welcome-title">Sakura AI</h1>
+        <p class="welcome-subtitle">あなたの日本語学習パートナー</p>
+        <div class="welcome-loading">
+            <div class="welcome-dot"></div>
+            <div class="welcome-dot"></div>
+            <div class="welcome-dot"></div>
+        </div>
+    </div>
+
+    <!-- Main app -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="avatar"></div>
+                <div class="title-section">
+                    <h1>Afny AI</h1>
+                    <p>あなたの日本語学習パートナー</p>
+                </div>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                🌙
+            </button>
+        </header>
+
+        <!-- Word of the day -->
+        <div class="word-of-day">
+            <h2 class="word-title">今日の言葉 (Word of the Day)</h2>
+            <div class="word-main">
+                <div class="word-japanese" id="wordJapanese">学習</div>
+                <div class="word-reading" id="wordReading">[がくしゅう]</div>
+                <div class="word-meaning" id="wordMeaning">Learning, Study</div>
+            </div>
+            <div class="word-example">
+                <div class="example-label">例文 (Example):</div>
+                <div class="example-japanese" id="exampleJapanese">日本語の学習は楽しいです。</div>
+                <div class="example-english" id="exampleEnglish">(Learning Japanese is fun.)</div>
+            </div>
+        </div>
+
+        <!-- Error message -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <span id="errorText"></span>
+            <button class="error-close" onclick="hideError()">✕</button>
+        </div>
+
+        <!-- Chat container -->
+        <div class="chat-container">
+            <div class="messages-area" id="messagesArea">
+                <!-- Sample messages for demo -->
+                <div class="message ai">
+                    <div class="message-avatar ai"></div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <div class="japanese-text">こんにちは！私はさくらです。日本語の練習を一緒にしましょう！</div>
+                            <div class="english-text">(EN: Hello! I'm Sakura. Let's practice Japanese together!)</div>
+                            <div class="message-time">10:30 AM</div>
+                        </div>
+                        <button class="speak-button" onclick="speakText('こんにちは！私はさくらです。日本語の練習を一緒にしましょう！', 'ja-JP')">🔊</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <button class="voice-button" id="voiceButton" onclick="startVoiceInput()">🎤</button>
+                    <input type="text" class="message-input" id="messageInput" placeholder="日本語でメッセージを入力..." onkeypress="handleKeyPress(event)">
+                    <button class="send-button" id="sendButton" onclick="sendMessage()" disabled>📤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating action button -->
+    <button class="fab" onclick="scrollToBottom()" title="Scroll to bottom">⬇️</button>
+
+    <script>
+        // Global state
+        let isLoading = false;
+        let isRecording = false;
+        let messages = [];
+        let speechRecognition = null;
+        let speechSynthesis = window.speechSynthesis;
+        let isDarkMode = localStorage.getItem('theme') === 'dark' || 
+                        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        // DOM elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const messagesArea = document.getElementById('messagesArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const voiceButton = document.getElementById('voiceButton');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply initial theme
+            applyTheme();
+            
+            setTimeout(() => {
+                welcomeScreen.classList.add('hidden');
+                initializeSpeechRecognition();
+                loadWordOfTheDay();
+                setupInputListeners();
+            }, 2000);
+        });
+
+        // Speech recognition setup
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                speechRecognition.continuous = false;
+                speechRecognition.interimResults = false;
+                speechRecognition.lang = 'ja-JP';
+
+                speechRecognition.onstart = () => {
+                    isRecording = true;
+                    voiceButton.classList.add('recording');
+                    voiceButton.innerHTML = '🔴';
+                };
+
+                speechRecognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    messageInput.value = transcript;
+                    updateSendButton();
+                };
+
+                speechRecognition.onend = () => {
+                    isRecording = false;
+                    voiceButton.classList.remove('recording');
+                    voiceButton.innerHTML = '🎤';
+                };
+
+                speechRecognition.onerror = (event) => {
+                    showError(`Voice recognition error: ${event.error}`);
+                    isRecording = false;
+                    voiceButton.classList.remove('recording');
+                    voiceButton.innerHTML = '🎤';
+                };
+            }
+        }
+
+        // Input listeners
+        function setupInputListeners() {
+            messageInput.addEventListener('input', updateSendButton);
+        }
+
+        function updateSendButton() {
+            const hasText = messageInput.value.trim().length > 0;
+            sendButton.disabled = !hasText || isLoading;
+            sendButton.style.opacity = hasText && !isLoading ? '1' : '0.5';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Voice input
+        function startVoiceInput() {
+            if (!speechRecognition) {
+                showError('Speech recognition not supported in this browser');
+                return;
+            }
+
+            if (isRecording) {
+                speechRecognition.stop();
+            } else {
+                try {
+                    speechRecognition.start();
+                } catch (error) {
+                    showError('Could not start voice recognition');
+                }
+            }
+        }
+
+        // Text to speech
+        function speakText(text, lang = 'ja-JP') {
+            if (!speechSynthesis) {
+                showError('Speech synthesis not supported');
+                return;
+            }
+
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            
+            const voices = speechSynthesis.getVoices();
+            const japaneseVoice = voices.find(voice => voice.lang.startsWith(lang.split('-')[0]));
+            if (japaneseVoice) {
+                utterance.voice = japaneseVoice;
+            }
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // Send message
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || isLoading) return;
+
+            // Add user message (Japanese)
+            addMessage(text, 'user');
+            messageInput.value = '';
+            updateSendButton();
+            
+            // Show loading for user translation
+            setLoading(true);
+
+            try {
+                // Translate user message to English
+                const userEnglishTranslation = await translateToEnglish(text);
+                updateMessageTranslation(messages[messages.length - 1].id, userEnglishTranslation);
+
+                // Show AI loading
+                showLoadingMessage();
+
+                // Simulate AI response delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Remove loading message
+                removeLoadingMessage();
+                
+                // Add AI response (mock response)
+                const responses = [
+                    'それは面白いですね！もっと詳しく教えてください。',
+                    'いい質問ですね。一緒に考えてみましょう。',
+                    'すばらしい！日本語が上手になっていますね。',
+                    'そうですね。他に何か聞きたいことはありますか？',
+                    'なるほど！とても良い練習になりますね。',
+                    'そのとおりです！素晴らしい理解力ですね。',
+                    '日本語で話してくれてありがとうございます。',
+                    '一緒に学習できて楽しいです！'
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const aiEnglishTranslation = await translateToEnglish(randomResponse);
+                
+                addMessage(randomResponse, 'ai', aiEnglishTranslation);
+                
+                // Speak the AI response
+                setTimeout(() => {
+                    speakText(randomResponse, 'ja-JP');
+                }, 500);
+
+            } catch (error) {
+                removeLoadingMessage();
+                showError('Failed to get response from AI');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Mock translation function (replace with actual API)
+        async function translateToEnglish(japaneseText) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Mock translations for demo responses
+            const translations = {
+                'それは面白いですね！もっと詳しく教えてください。': 'That\'s interesting! Please tell me more details.',
+                'いい質問ですね。一緒に考えてみましょう。': 'That\'s a good question. Let\'s think about it together.',
+                'すばらしい！日本語が上手になっていますね。': 'Wonderful! Your Japanese is getting better.',
+                'そうですね。他に何か聞きたいことはありますか？': 'I see. Is there anything else you\'d like to ask?',
+                'なるほど！とても良い練習になりますね。': 'I understand! This is very good practice.',
+                'そのとおりです！素晴らしい理解力ですね。': 'That\'s right! You have wonderful understanding.',
+                '日本語で話してくれてありがとうございます。': 'Thank you for speaking in Japanese.',
+                '一緒に学習できて楽しいです！': 'It\'s fun to learn together!',
+                // Common user inputs
+                'こんにちは': 'Hello',
+                'おはよう': 'Good morning',
+                'ありがとう': 'Thank you',
+                'すみません': 'Excuse me/Sorry',
+                'はじめまして': 'Nice to meet you',
+                '元気です': 'I\'m fine',
+                '日本語を勉強しています': 'I am studying Japanese',
+                'わかりません': 'I don\'t understand',
+                'もう一度お願いします': 'Please say it again',
+                '私の名前は': 'My name is'
+            };
+            
+            // Check for exact matches first
+            if (translations[japaneseText]) {
+                return translations[japaneseText];
+            }
+            
+            // Check for partial matches or common phrases
+            for (const [jp, en] of Object.entries(translations)) {
+                if (japaneseText.includes(jp) || jp.includes(japaneseText)) {
+                    return en;
+                }
+            }
+            
+            // If no match found, return a generic response
+            return 'Translation in progress...';
+        }
+
+        // Add message to chat
+        function addMessage(text, sender, englishText = null) {
+            const messageId = Date.now().toString();
+            const message = {
+                id: messageId,
+                text: text,
+                englishText: englishText,
+                sender: sender,
+                timestamp: new Date()
+            };
+
+            messages.push(message);
+            renderMessage(message);
+            scrollToBottom();
+        }
+
+        // Update message translation
+        function updateMessageTranslation(messageId, englishText) {
+            const messageIndex = messages.findIndex(m => m.id === messageId);
+            if (messageIndex !== -1) {
+                messages[messageIndex].englishText = englishText;
+                
+                // Update the DOM
+                const messageElement = document.querySelector(`[data-id="${messageId}"]`);
+                if (messageElement) {
+                    const bubbleElement = messageElement.querySelector('.message-bubble');
+                    const existingEnglish = bubbleElement.querySelector('.english-text');
+                    
+                    if (existingEnglish) {
+                        existingEnglish.textContent = `(EN: ${englishText})`;
+                    } else {
+                        const englishDiv = document.createElement('div');
+                        englishDiv.className = 'english-text';
+                        englishDiv.textContent = `(EN: ${englishText})`;
+                        
+                        const timeElement = bubbleElement.querySelector('.message-time');
+                        timeElement.parentNode.insertBefore(englishDiv, timeElement);
+                    }
+                }
+            }
+        }
+
+        // Render message
+        function renderMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.sender}`;
+            messageDiv.setAttribute('data-id', message.id);
+
+            const avatar = message.sender === 'ai' ? '' : '👤';
+            const avatarClass = message.sender === 'ai' ? 'ai' : '';
+            const time = message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="japanese-text">${message.text}</div>
+                        ${message.englishText ? `<div class="english-text">(EN: ${message.englishText})</div>` : ''}
+                        <div class="message-time">${time}</div>
+                    </div>
+                    ${message.sender === 'ai' ? `<button class="speak-button" onclick="speakText('${message.text}', 'ja-JP')">🔊</button>` : ''}
+                </div>
+            `;
+
+            messagesArea.appendChild(messageDiv);
+        }
+
+        // Loading states
+        function setLoading(loading) {
+            isLoading = loading;
+            updateSendButton();
+            
+            if (loading) {
+                voiceButton.disabled = true;
+                voiceButton.style.opacity = '0.5';
+            } else {
+                voiceButton.disabled = false;
+                voiceButton.style.opacity = '1';
+            }
+        }
+
+        function showLoadingMessage() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-message';
+            loadingDiv.id = 'loadingMessage';
+            
+            loadingDiv.innerHTML = `
+                <div class="message-avatar ai"></div>
+                <div class="loading-bubble">
+                    <span>さくらが考えています...</span>
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </div>
+            `;
+
+            messagesArea.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        function removeLoadingMessage() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+
+        // Word of the day
+        function loadWordOfTheDay() {
+            // Mock word of the day data (replace with actual API call)
+            const wordsOfTheDay = [
+                {
+                    word: '勉強',
+                    reading: 'べんきょう',
+                    meaning: 'Study, Learning',
+                    exampleJapanese: '毎日日本語を勉強しています。',
+                    exampleEnglish: 'I study Japanese every day.'
+                },
+                {
+                    word: '友達',
+                    reading: 'ともだち',
+                    meaning: 'Friend',
+                    exampleJapanese: '新しい友達ができました。',
+                    exampleEnglish: 'I made a new friend.'
+                },
+                {
+                    word: '旅行',
+                    reading: 'りょこう',
+                    meaning: 'Travel, Trip',
+                    exampleJapanese: '来月日本に旅行します。',
+                    exampleEnglish: 'I will travel to Japan next month.'
+                }
+            ];
+
+            const randomWord = wordsOfTheDay[Math.floor(Math.random() * wordsOfTheDay.length)];
+            
+            document.getElementById('wordJapanese').textContent = randomWord.word;
+            document.getElementById('wordReading').textContent = `[${randomWord.reading}]`;
+            document.getElementById('wordMeaning').textContent = randomWord.meaning;
+            document.getElementById('exampleJapanese').textContent = randomWord.exampleJapanese;
+            document.getElementById('exampleEnglish').textContent = `(${randomWord.exampleEnglish})`;
+        }
+
+        // Utility functions
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'flex';
+            setTimeout(hideError, 5000);
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            applyTheme();
+        }
+
+        function applyTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            
+            if (isDarkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+            }
+        }
+
+        // Initialize voices for speech synthesis
+        if (speechSynthesis) {
+            speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+
+        // Add some interaction effects
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                const speed = (index + 1) * 0.00005;
+                const x = e.clientX * speed;
+                const y = e.clientY * speed;
+                particle.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+
+        // Smooth scroll behavior for messages
+        messagesArea.addEventListener('scroll', () => {
+            const fab = document.querySelector('.fab');
+            const isAtBottom = messagesArea.scrollHeight - messagesArea.clientHeight <= messagesArea.scrollTop + 1;
+            fab.style.opacity = isAtBottom ? '0.5' : '1';
+        });
+
+        // Add some sample messages after loading
+        setTimeout(() => {
+            if (messages.length <= 1) {
+                addMessage('こんにちは、さくら！', 'user', 'Hello, Sakura!');
+                setTimeout(() => {
+                    addMessage('こんにちは！今日は何を学びたいですか？', 'ai', 'Hello! What would you like to learn today?');
+                }, 1000);
+            }
+        }, 3000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to send message
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                sendMessage();
+            }
+            
+            // Ctrl/Cmd + M to start voice input
+            if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+                e.preventDefault();
+                startVoiceInput();
+            }
+        });
+
+        // Enhanced animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                } else {
+                    entry.target.style.opacity = '0.8';
+                    entry.target.style.transform = 'translateY(10px)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe messages for scroll animations
+        const observeMessages = () => {
+            document.querySelectorAll('.message').forEach(message => {
+                observer.observe(message);
+            });
+        };
+
+        // Call initially and after new messages
+        setTimeout(observeMessages, 100);
+
+        // Performance optimization: debounced resize handler
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+        });
+
+        // Easter egg: Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.length === konamiSequence.length && 
+                konamiCode.every((code, index) => code === konamiSequence[index])) {
+                // Easter egg activated!
+                document.body.style.filter = 'hue-rotate(180deg)';
+                setTimeout(() => {
+                    document.body.style.filter = '';
+                }, 3000);
+                
+                addMessage('🎉 秘密のコードを発見しました！', 'ai', '🎉 You discovered the secret code!');
+                konamiCode = [];
+            }
+        });
+
+        console.log('🌸 Sakura AI Enhanced - Ready to learn Japanese! 🌸');
+    </script>
+</body>
+</html>
