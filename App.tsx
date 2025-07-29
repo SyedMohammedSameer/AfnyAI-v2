@@ -32,11 +32,13 @@ const App: React.FC = () => {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      document.body.className = 'dark';
+      document.body.className = 'dark bg-black';
+      document.body.style.backgroundColor = '#000000';
       localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      document.body.className = '';
+      document.body.className = 'bg-gradient-to-br from-pink-300 via-purple-400 to-indigo-500';
+      document.body.style.backgroundColor = '';
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
@@ -193,13 +195,13 @@ const App: React.FC = () => {
     return (
       <div className={`flex items-center justify-center h-screen transition-all duration-500 ${
         darkMode 
-          ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+          ? 'bg-black' 
           : 'bg-gradient-to-br from-pink-300 via-purple-400 to-indigo-500'
       }`}>
         <div className="text-center">
           <div className={`w-20 h-20 mb-6 mx-auto backdrop-blur-lg rounded-full flex items-center justify-center animate-pulse border-2 ${
             darkMode 
-              ? 'bg-white/10 border-purple-400/30' 
+              ? 'bg-gray-900/50 border-gray-700/30' 
               : 'bg-white/20 border-white/40'
           }`}>
             <img 
@@ -214,16 +216,16 @@ const App: React.FC = () => {
             <span className="text-4xl hidden">🌸</span>
           </div>
           <p className={`text-2xl font-semibold animate-pulse ${
-            darkMode ? 'text-purple-200' : 'text-white'
+            darkMode ? 'text-white' : 'text-white'
           }`}>
-            Afny AI を起動中...
+            Sakura AI を起動中...
           </p>
           <div className="flex justify-center mt-4 space-x-1">
             {[0, 1, 2].map((i) => (
               <div 
                 key={i}
                 className={`w-2 h-2 rounded-full animate-bounce ${
-                  darkMode ? 'bg-purple-300/60' : 'bg-white/60'
+                  darkMode ? 'bg-gray-400/60' : 'bg-white/60'
                 }`}
                 style={{animationDelay: `${i * 0.1}s`}}
               />
@@ -238,12 +240,12 @@ const App: React.FC = () => {
      return (
       <div className={`min-h-screen flex items-center justify-center p-8 transition-all duration-500 ${
         darkMode 
-          ? 'bg-gradient-to-br from-red-900 via-gray-900 to-black' 
+          ? 'bg-black' 
           : 'bg-gradient-to-br from-red-400 via-pink-400 to-purple-500'
       }`}>
         <div className={`max-w-md w-full backdrop-blur-lg rounded-2xl p-8 text-center shadow-2xl border ${
           darkMode 
-            ? 'bg-black/20 border-red-500/30' 
+            ? 'bg-gray-900/20 border-red-500/30' 
             : 'bg-white/10 border-white/30'
         }`}>
           <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${
@@ -280,21 +282,21 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen relative overflow-hidden transition-all duration-500 ${
       darkMode 
-        ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800' 
+        ? 'bg-black' 
         : 'bg-gradient-to-br from-pink-300 via-purple-400 to-indigo-500'
     }`}>
-      {/* Animated background particles */}
+      {/* Animated background particles - subtle for dark mode */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className={`absolute w-4 h-4 rounded-full animate-float ${
-              darkMode ? 'bg-purple-400/10' : 'bg-white/20'
+            className={`absolute w-3 h-3 rounded-full animate-float ${
+              darkMode ? 'bg-gray-800/20' : 'bg-white/20'
             }`}
             style={{
-              left: `${5 + i * 12}%`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${8 + i * 0.5}s`
+              left: `${5 + i * 15}%`,
+              animationDelay: `${i * 1.2}s`,
+              animationDuration: `${10 + i * 0.5}s`
             }}
           />
         ))}
@@ -304,14 +306,14 @@ const App: React.FC = () => {
         {/* Header with glassmorphism */}
         <header className={`backdrop-blur-xl p-4 sticky top-0 z-50 transition-all duration-300 border-b ${
           darkMode 
-            ? 'bg-black/10 border-purple-500/20' 
+            ? 'bg-black/50 border-gray-800/50' 
             : 'bg-white/10 border-white/20'
         }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-2 transition-all duration-300 ${
                 darkMode 
-                  ? 'bg-purple-900/30 border-purple-400/50' 
+                  ? 'bg-gray-900/50 border-gray-700/50' 
                   : 'bg-white/20 border-white/30'
               }`}>
                 <img 
@@ -328,13 +330,13 @@ const App: React.FC = () => {
               <div>
                 <h1 className={`text-2xl md:text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
                   darkMode 
-                    ? 'from-purple-300 to-pink-300' 
+                    ? 'from-white to-gray-300' 
                     : 'from-white to-pink-100'
                 }`}>
-                  🌸 Afny AI 🌸
+                  Sakura AI
                 </h1>
                 <p className={`text-sm ${
-                  darkMode ? 'text-purple-200/80' : 'text-white/90'
+                  darkMode ? 'text-gray-400' : 'text-white/90'
                 }`}>
                   あなたの日本語学習パートナー
                 </p>
@@ -373,7 +375,7 @@ const App: React.FC = () => {
         {/* Chat container */}
         <div className={`flex-1 mx-4 mb-4 mt-2 backdrop-blur-xl rounded-2xl border shadow-2xl overflow-hidden ${
           darkMode 
-            ? 'bg-black/10 border-purple-500/20' 
+            ? 'bg-gray-900/10 border-gray-800/50' 
             : 'bg-white/10 border-white/20'
         }`}>
           <ChatView
@@ -397,7 +399,7 @@ const App: React.FC = () => {
         }
         
         .animate-float {
-          animation: float 6s ease-in-out infinite;
+          animation: float 8s ease-in-out infinite;
         }
       `}</style>
     </div>

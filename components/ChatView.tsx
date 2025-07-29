@@ -56,7 +56,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
         ref={chatContainerRef} 
         className={`flex-1 overflow-y-auto p-6 space-y-6 ${
           darkMode 
-            ? 'scrollbar-thin scrollbar-thumb-purple-400/20 scrollbar-track-transparent hover:scrollbar-thumb-purple-400/30' 
+            ? 'scrollbar-thin scrollbar-thumb-gray-700/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-600/70' 
             : 'scrollbar-thin scrollbar-thumb-pink-400/20 scrollbar-track-transparent hover:scrollbar-thumb-pink-400/30'
         }`}
         style={{ background: 'transparent' }}
@@ -66,12 +66,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
           <div className="flex items-center justify-center h-full">
             <div className={`text-center p-8 backdrop-blur-sm rounded-2xl border max-w-md transition-all duration-300 ${
               darkMode 
-                ? 'bg-black/5 border-purple-400/20' 
+                ? 'bg-black/20 border-gray-800/30' 
                 : 'bg-white/5 border-pink-300/20'
             }`}>
               <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
                 darkMode 
-                  ? 'bg-purple-900/30 border-purple-400/50' 
+                  ? 'bg-gray-900/50 border-gray-700/50' 
                   : 'bg-pink-200/50 border-pink-400/50'
               }`}>
                 <img 
@@ -91,12 +91,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 <span className="text-3xl hidden">🌸</span>
               </div>
               <h3 className={`text-xl font-semibold mb-2 ${
-                darkMode ? 'text-purple-200' : 'text-pink-700'
+                darkMode ? 'text-white' : 'text-pink-700'
               }`}>
                 こんにちは！
               </h3>
               <p className={`text-sm ${
-                darkMode ? 'text-purple-300/70' : 'text-pink-600/70'
+                darkMode ? 'text-gray-400' : 'text-pink-600/70'
               }`}>
                 日本語で話しかけてください。Let's practice Japanese together!
               </p>
@@ -120,7 +120,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
           <div className="flex justify-start items-end space-x-3 animate-fadeIn">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 transition-all duration-300 ${
               darkMode 
-                ? 'bg-purple-900/30 border-purple-400/50' 
+                ? 'bg-gray-900/50 border-gray-700/50' 
                 : 'bg-pink-200/50 border-pink-400/50'
             }`}>
               <img 
@@ -141,11 +141,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
             </div>
             <div className={`flex items-center space-x-2 backdrop-blur-sm p-4 rounded-2xl rounded-bl-md max-w-xs border shadow-lg transition-all duration-300 ${
               darkMode 
-                ? 'bg-purple-900/20 border-purple-400/30 text-purple-100' 
+                ? 'bg-gray-800/50 border-gray-700/50 text-gray-200' 
                 : 'bg-pink-100/20 border-pink-300/30 text-pink-800'
             }`}>
               <LoadingSpinner className={`w-5 h-5 ${
-                darkMode ? 'text-purple-300' : 'text-pink-500'
+                darkMode ? 'text-gray-400' : 'text-pink-500'
               }`} />
               <span className="text-sm">さくらが考えています...</span>
             </div>
@@ -156,7 +156,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
       {/* Input area with glassmorphism */}
       <div className={`p-6 border-t backdrop-blur-sm transition-all duration-300 ${
         darkMode 
-          ? 'border-purple-500/20 bg-black/5' 
+          ? 'border-gray-800/50 bg-black/20' 
           : 'border-pink-300/20 bg-white/5'
       }`}>
         <form onSubmit={handleSubmit} className="flex items-center space-x-3">
@@ -169,7 +169,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               isRecording 
                 ? 'bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/25 animate-pulse focus:ring-red-400' 
                 : darkMode
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg shadow-purple-500/25 focus:ring-purple-400'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-600/25 focus:ring-blue-400'
                   : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-lg shadow-pink-500/25 focus:ring-pink-400'
             }`}
             aria-label={isRecording ? "Recording... Click to stop" : "Start voice input"}
@@ -186,7 +186,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               placeholder="日本語でメッセージを入力..."
               className={`w-full p-4 backdrop-blur-sm border rounded-2xl focus:ring-2 focus:border-transparent focus:outline-none transition-all duration-300 ${
                 darkMode 
-                  ? 'bg-black/10 border-purple-400/20 focus:ring-purple-400 text-purple-100 placeholder-purple-300/60' 
+                  ? 'bg-gray-900/30 border-gray-700/30 focus:ring-blue-500 text-white placeholder-gray-400' 
                   : 'bg-white/10 border-pink-300/20 focus:ring-pink-400 text-pink-800 placeholder-pink-600/60'
               }`}
               disabled={isLoading}
@@ -206,7 +206,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
             disabled={isLoading || !inputText.trim()}
             className={`p-4 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-105 active:scale-95 ${
               darkMode 
-                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white focus:ring-blue-400 shadow-blue-600/25' 
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white focus:ring-emerald-400 shadow-emerald-600/25' 
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white focus:ring-blue-400 shadow-blue-500/25'
             }`}
             aria-label="Send message"
@@ -228,7 +228,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 onClick={() => setInputText(suggestion)}
                 className={`px-3 py-1 text-sm backdrop-blur-sm rounded-full border transition-all duration-300 transform hover:scale-105 ${
                   darkMode 
-                    ? 'bg-purple-900/10 hover:bg-purple-900/20 text-purple-200/80 hover:text-purple-100 border-purple-400/20' 
+                    ? 'bg-gray-800/20 hover:bg-gray-700/30 text-gray-300 hover:text-white border-gray-700/30' 
                     : 'bg-pink-100/10 hover:bg-pink-100/20 text-pink-700/80 hover:text-pink-800 border-pink-300/20'
                 }`}
               >
@@ -254,8 +254,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
           width: 6px;
         }
         
-        .scrollbar-thumb-purple-400\\/20::-webkit-scrollbar-thumb {
-          background: rgba(196, 181, 253, 0.2);
+        .scrollbar-thumb-gray-700\\/50::-webkit-scrollbar-thumb {
+          background: rgba(55, 65, 81, 0.5);
           border-radius: 3px;
         }
         
@@ -268,8 +268,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
           background: transparent;
         }
         
-        .hover\\:scrollbar-thumb-purple-400\\/30:hover::-webkit-scrollbar-thumb {
-          background: rgba(196, 181, 253, 0.3);
+        .hover\\:scrollbar-thumb-gray-600\\/70:hover::-webkit-scrollbar-thumb {
+          background: rgba(75, 85, 99, 0.7);
         }
         
         .hover\\:scrollbar-thumb-pink-400\\/30:hover::-webkit-scrollbar-thumb {

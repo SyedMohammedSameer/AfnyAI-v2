@@ -22,7 +22,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
       {!isUser && (
         <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg flex-shrink-0 transition-transform duration-300 hover:scale-110 border-2 ${
           darkMode 
-            ? 'bg-purple-900/30 border-purple-400/50' 
+            ? 'bg-gray-900/50 border-gray-700/50' 
             : 'bg-pink-200/50 border-pink-400/50'
         }`}>
           <img 
@@ -46,10 +46,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
             ${
               isUser
                 ? darkMode
-                  ? 'bg-gradient-to-r from-blue-600/80 to-indigo-600/80 border-blue-400/30 rounded-br-md'
+                  ? 'bg-gradient-to-r from-blue-700/90 to-indigo-700/90 border-blue-600/40 rounded-br-md'
                   : 'bg-gradient-to-r from-blue-500/80 to-purple-500/80 border-blue-400/30 rounded-br-md'
                 : darkMode
-                  ? 'bg-gradient-to-r from-purple-600/80 to-pink-600/80 border-purple-400/30 rounded-bl-md'
+                  ? 'bg-gradient-to-r from-gray-800/90 to-gray-700/90 border-gray-600/40 rounded-bl-md'
                   : 'bg-gradient-to-r from-pink-500/80 to-rose-500/80 border-pink-400/30 rounded-bl-md'
             }
           `}
@@ -86,7 +86,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
               onClick={() => onSpeakText(message.japaneseText, 'ja-JP')}
               className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-300 flex items-center justify-center shadow-lg transform hover:scale-110 focus:outline-none focus:ring-2 ${
                 darkMode 
-                  ? 'bg-purple-100/90 hover:bg-purple-50 text-purple-600 hover:text-purple-700 focus:ring-purple-400' 
+                  ? 'bg-white/90 hover:bg-white text-gray-700 hover:text-gray-800 focus:ring-blue-400' 
                   : 'bg-white/90 hover:bg-white text-pink-500 hover:text-pink-600 focus:ring-pink-400'
               }`}
               aria-label="Speak AI message"
@@ -101,10 +101,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
           className={`absolute w-3 h-3 transform rotate-45 ${
             isUser
               ? darkMode
-                ? 'bottom-3 -right-1 bg-gradient-to-r from-blue-600/80 to-indigo-600/80'
+                ? 'bottom-3 -right-1 bg-gradient-to-r from-blue-700/90 to-indigo-700/90'
                 : 'bottom-3 -right-1 bg-gradient-to-r from-blue-500/80 to-purple-500/80'
               : darkMode
-                ? 'bottom-3 -left-1 bg-gradient-to-r from-purple-600/80 to-pink-600/80'
+                ? 'bottom-3 -left-1 bg-gradient-to-r from-gray-800/90 to-gray-700/90'
                 : 'bottom-3 -left-1 bg-gradient-to-r from-pink-500/80 to-rose-500/80'
           }`}
         />
@@ -114,5 +114,3 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
 };
 
 export default MessageBubble;
-
-// Add styles to your global CSS or use a <style> tag in your component
