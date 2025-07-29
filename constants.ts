@@ -1,6 +1,6 @@
 
-export const GEMINI_CHAT_MODEL = 'gemini-2.5-flash-preview-04-17';
-export const GEMINI_TRANSLATE_MODEL = 'gemini-2.5-flash-preview-04-17'; // Can use the same for general text tasks
+export const GEMINI_CHAT_MODEL = 'gemini-1.5-flash-latest';
+export const GEMINI_TRANSLATE_MODEL = 'gemini-1.5-flash-latest';
 
 export const SYSTEM_INSTRUCTION = `You are Sakura, a friendly and patient AI Japanese language tutor. 
 Your goal is to help users practice conversational Japanese. 
