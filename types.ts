@@ -1,4 +1,3 @@
-
 export enum SenderType {
   User = 'user',
   AI = 'ai',
@@ -10,13 +9,13 @@ export interface Message {
   japaneseText: string;
   englishText?: string;
   timestamp: Date;
-  avatarUrl?: string; // Added for AI avatar
+  avatarUrl?: string;
 }
 
 export interface WordOfTheDayType {
   word: string;
   reading: string;
-  meaning:string;
+  meaning: string;
   exampleJapanese: string;
   exampleEnglish: string;
 }
