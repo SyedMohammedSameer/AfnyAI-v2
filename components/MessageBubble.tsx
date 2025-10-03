@@ -80,13 +80,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onSpeakTe
             })}
           </p>
 
-          {/* Speak button for AI messages */}
+          {/* Speak button for AI messages - Always visible on mobile */}
           {!isUser && message.japaneseText && (
-            <button 
+            <button
               onClick={() => onSpeakText(message.japaneseText, 'ja-JP')}
-              className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-300 flex items-center justify-center shadow-lg transform hover:scale-110 focus:outline-none focus:ring-2 ${
-                darkMode 
-                  ? 'bg-white/90 hover:bg-white text-gray-700 hover:text-gray-800 focus:ring-blue-400' 
+              className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full sm:opacity-0 sm:group-hover:opacity-100 opacity-90 focus:opacity-100 transition-all duration-300 flex items-center justify-center shadow-lg transform hover:scale-110 focus:outline-none focus:ring-2 ${
+                darkMode
+                  ? 'bg-white/90 hover:bg-white text-gray-700 hover:text-gray-800 focus:ring-blue-400'
                   : 'bg-white/90 hover:bg-white text-pink-500 hover:text-pink-600 focus:ring-pink-400'
               }`}
               aria-label="Speak AI message"

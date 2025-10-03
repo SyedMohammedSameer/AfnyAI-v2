@@ -146,32 +146,52 @@ export class SpeechService {
       return;
     }
 
-    // Cancel any ongoing speech
-    this.speechSynthesis.cancel();
+    try {
+      // Cancel any ongoing speech
+      this.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.rate = 0.9; // Slightly slower for better comprehension
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
 
-    // Attempt to find a suitable voice
-    const voices = this.speechSynthesis.getVoices();
-    let japaneseVoice = voices.find(voice => voice.lang === lang);
-    
-    // If specific lang voice not found, try with lang prefix (e.g., 'ja' for 'ja-JP')
-    if (!japaneseVoice && lang.includes('-')) {
-        japaneseVoice = voices.find(voice => voice.lang.startsWith(lang.split('-')[0]));
+      // Attempt to find a suitable voice
+      const voices = this.speechSynthesis.getVoices();
+      let japaneseVoice = voices.find(voice => voice.lang === lang);
+
+      // If specific lang voice not found, try with lang prefix (e.g., 'ja' for 'ja-JP')
+      if (!japaneseVoice && lang.includes('-')) {
+          japaneseVoice = voices.find(voice => voice.lang.startsWith(lang.split('-')[0]));
+      }
+
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice;
+        console.log('Using voice:', japaneseVoice.name);
+      } else {
+        console.warn(`No voice found for language: ${lang}. Using default.`);
+      }
+
+      utterance.onstart = () => {
+        console.log('Speech started');
+      };
+
+      utterance.onend = () => {
+        console.log('Speech ended');
+      };
+
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event.error, event);
+      };
+
+      // Small delay to ensure previous speech is cancelled
+      setTimeout(() => {
+        this.speechSynthesis.speak(utterance);
+        console.log('Speaking:', text.substring(0, 50) + '...');
+      }, 100);
+    } catch (error) {
+      console.error('Error in speakText:', error);
     }
-
-    if (japaneseVoice) {
-      utterance.voice = japaneseVoice;
-    } else {
-      console.warn(`No voice found for language: ${lang}. Using default.`);
-    }
-    
-    utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-    };
-
-    this.speechSynthesis.speak(utterance);
   }
 
   // Call this function early, e.g., on a user interaction, to populate voices list

@@ -3,7 +3,7 @@ import { ChatView } from './components/ChatView';
 import { WordOfTheDayDisplay } from './components/WordOfTheDay';
 import { ThemeToggle } from './components/ThemeToggle';
 import { Message, WordOfTheDayType, SenderType } from './types';
-import { GroqService } from './services/groqService';
+import { ApiService } from './services/apiService';
 import { SpeechService } from './services/speechService';
 import { SYSTEM_INSTRUCTION, GROQ_CHAT_MODEL } from './constants';
 
@@ -24,7 +24,7 @@ const App: React.FC = () => {
     return false;
   });
 
-  const groqService = useRef<GroqService | null>(null);
+  const apiService = useRef<ApiService | null>(null);
   const speechService = useRef<SpeechService | null>(null);
 
   useEffect(() => {
@@ -42,16 +42,9 @@ const App: React.FC = () => {
   }, [darkMode]);
 
   useEffect(() => {
-    console.log('API_KEY check:', !!process.env.API_KEY);
-    console.log('API_KEY value:', process.env.API_KEY ? 'Present (length: ' + process.env.API_KEY.length + ')' : 'Missing');
-
-    if (!process.env.API_KEY) {
-      setError("API Key is not configured. Please set the GROQ_API_KEY environment variable in .env.local file.");
-      setIsInitializing(false);
-      return;
-    }
     try {
-      groqService.current = new GroqService(process.env.API_KEY);
+      // API service doesn't need API key on frontend - it's secured in Netlify functions
+      apiService.current = new ApiService();
       speechService.current = new SpeechService();
       speechService.current.loadVoices();
       setIsInitializing(false);
@@ -63,10 +56,10 @@ const App: React.FC = () => {
   }, []);
 
   const initializeChat = useCallback(async () => {
-    if (groqService.current) {
+    if (apiService.current) {
       try {
         console.log('Initializing chat session...');
-        await groqService.current.initChat(GROQ_CHAT_MODEL, SYSTEM_INSTRUCTION);
+        await apiService.current.initChat(GROQ_CHAT_MODEL, SYSTEM_INSTRUCTION);
         console.log('Chat session initialized successfully');
       } catch (e) {
         console.error("Failed to initialize chat session:", e);
@@ -76,16 +69,16 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isInitializing && groqService.current) {
+    if (!isInitializing && apiService.current) {
       initializeChat();
       fetchWOTD();
     }
   }, [isInitializing, initializeChat]);
 
   const fetchWOTD = async () => {
-    if (!groqService.current) return;
+    if (!apiService.current) return;
     try {
-      const wotd = await groqService.current.fetchWordOfTheDay();
+      const wotd = await apiService.current.fetchWordOfTheDay();
       setWordOfTheDay(wotd);
     } catch (e) {
       console.error("Failed to fetch Word of the Day:", e);
@@ -114,9 +107,9 @@ const App: React.FC = () => {
   };
 
   const translateAndAdd = async (japaneseText: string, sender: SenderType) => {
-    if (!groqService.current) return;
+    if (!apiService.current) return;
     try {
-      const englishText = await groqService.current.translateText(japaneseText, 'English');
+      const englishText = await apiService.current.translateText(japaneseText, 'English');
       addMessage(englishText, sender, 'english');
     } catch (e) {
       console.error(`Translation error for ${sender}:`, e);
@@ -125,17 +118,17 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (japaneseInput: string) => {
-    if (!japaneseInput.trim() || isLoading || !groqService.current) {
+    if (!japaneseInput.trim() || isLoading || !apiService.current) {
       console.log('Cannot send message:', {
         hasInput: !!japaneseInput.trim(),
         isLoading,
-        hasGroqService: !!groqService.current
+        hasApiService: !!apiService.current
       });
       return;
     }
 
     console.log('Sending message:', japaneseInput);
-    console.log('Groq service available:', !!groqService.current);
+    console.log('API service available:', !!apiService.current);
 
     setIsLoading(true);
     setError(null);
@@ -143,13 +136,22 @@ const App: React.FC = () => {
     await translateAndAdd(japaneseInput, SenderType.User);
 
     try {
-      const aiResponseJapanese = await groqService.current.sendMessageToAI(japaneseInput);
+      const aiResponseJapanese = await apiService.current.sendMessageToAI(japaneseInput);
       console.log('AI Response received:', aiResponseJapanese);
 
       addMessage(aiResponseJapanese, SenderType.AI, 'japanese');
-      if (speechService.current) {
-        speechService.current.speakText(aiResponseJapanese, 'ja-JP');
+
+      // Auto-play AI response after user interaction (message send)
+      if (speechService.current && aiResponseJapanese) {
+        console.log('Auto-playing AI response');
+        // Small delay to ensure message is rendered
+        setTimeout(() => {
+          if (speechService.current) {
+            speechService.current.speakText(aiResponseJapanese, 'ja-JP');
+          }
+        }, 200);
       }
+
       await translateAndAdd(aiResponseJapanese, SenderType.AI);
     } catch (e) {
       console.error("AI response error:", e);
@@ -181,7 +183,10 @@ const App: React.FC = () => {
 
   const handleSpeakText = (text: string, lang: string) => {
     if (speechService.current) {
+      console.log('handleSpeakText called with:', { text: text.substring(0, 50), lang });
       speechService.current.speakText(text, lang);
+    } else {
+      console.error('Speech service not available');
     }
   };
   
@@ -232,48 +237,6 @@ const App: React.FC = () => {
     );
   }
   
-  if (error && messages.length === 0 && error.includes("API Key")) {
-     return (
-      <div className={`min-h-screen flex items-center justify-center p-8 transition-all duration-500 ${
-        darkMode 
-          ? 'bg-black' 
-          : 'bg-gradient-to-br from-red-400 via-pink-400 to-purple-500'
-      }`}>
-        <div className={`max-w-md w-full backdrop-blur-lg rounded-2xl p-8 text-center shadow-2xl border ${
-          darkMode 
-            ? 'bg-gray-900/20 border-red-500/30' 
-            : 'bg-white/10 border-white/30'
-        }`}>
-          <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${
-            darkMode ? 'bg-red-900/30' : 'bg-white/20'
-          }`}>
-            <span className="text-3xl">⚠️</span>
-          </div>
-          <h1 className="text-2xl text-white font-bold mb-4">エラーが発生しました</h1>
-          <p className="text-white/80 mb-6">{error}</p>
-          <div className={`backdrop-blur-sm rounded-lg p-4 mb-6 text-left border ${
-            darkMode 
-              ? 'bg-yellow-900/20 border-yellow-600/30' 
-              : 'bg-white/10 border-white/20'
-          }`}>
-            <p className="font-bold text-yellow-200 mb-2">APIキーの設定が必要です</p>
-            <p className="text-yellow-100 text-sm">Create a <code className="bg-black/20 px-1 rounded">.env.local</code> file with:</p>
-            <code className="text-yellow-100 text-sm bg-black/20 p-2 rounded mt-2 block">GROQ_API_KEY=your_api_key_here</code>
-          </div>
-          <button 
-            onClick={() => window.location.reload()}
-            className={`w-full py-3 text-white rounded-lg transition-all duration-300 font-semibold backdrop-blur-sm border ${
-              darkMode 
-                ? 'bg-white/10 hover:bg-white/20 border-white/20' 
-                : 'bg-white/20 hover:bg-white/30 border-white/30'
-            }`}
-          >
-            再読み込み
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={`min-h-screen relative overflow-hidden transition-all duration-500 ${
