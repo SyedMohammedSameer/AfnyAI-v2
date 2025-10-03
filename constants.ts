@@ -1,6 +1,6 @@
 
-export const GEMINI_CHAT_MODEL = 'gemini-1.5-flash-latest';
-export const GEMINI_TRANSLATE_MODEL = 'gemini-1.5-flash-latest';
+// Using Groq's best free tier model for general conversation and Japanese
+export const GROQ_CHAT_MODEL = 'llama-3.3-70b-versatile';
 
 export const SYSTEM_INSTRUCTION = `You are Sakura, a friendly and patient AI Japanese language tutor. 
 Your goal is to help users practice conversational Japanese. 

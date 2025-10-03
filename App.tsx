@@ -3,10 +3,9 @@ import { ChatView } from './components/ChatView';
 import { WordOfTheDayDisplay } from './components/WordOfTheDay';
 import { ThemeToggle } from './components/ThemeToggle';
 import { Message, WordOfTheDayType, SenderType } from './types';
-import { GeminiService } from './services/geminiService';
+import { GroqService } from './services/groqService';
 import { SpeechService } from './services/speechService';
-import { SYSTEM_INSTRUCTION, GEMINI_CHAT_MODEL } from './constants';
-import type { ChatSession } from '@google/generative-ai';
+import { SYSTEM_INSTRUCTION, GROQ_CHAT_MODEL } from './constants';
 
 const SAKURA_AVATAR_URL = '/assets/images/sakura-avatar.png';
 
@@ -25,9 +24,8 @@ const App: React.FC = () => {
     return false;
   });
 
-  const geminiService = useRef<GeminiService | null>(null);
+  const groqService = useRef<GroqService | null>(null);
   const speechService = useRef<SpeechService | null>(null);
-  const aiChatSession = useRef<ChatSession | null>(null);
 
   useEffect(() => {
     if (darkMode) {
@@ -46,14 +44,14 @@ const App: React.FC = () => {
   useEffect(() => {
     console.log('API_KEY check:', !!process.env.API_KEY);
     console.log('API_KEY value:', process.env.API_KEY ? 'Present (length: ' + process.env.API_KEY.length + ')' : 'Missing');
-    
+
     if (!process.env.API_KEY) {
-      setError("API Key is not configured. Please set the GEMINI_API_KEY environment variable in .env.local file.");
+      setError("API Key is not configured. Please set the GROQ_API_KEY environment variable in .env.local file.");
       setIsInitializing(false);
       return;
     }
     try {
-      geminiService.current = new GeminiService(process.env.API_KEY);
+      groqService.current = new GroqService(process.env.API_KEY);
       speechService.current = new SpeechService();
       speechService.current.loadVoices();
       setIsInitializing(false);
@@ -65,10 +63,10 @@ const App: React.FC = () => {
   }, []);
 
   const initializeChat = useCallback(async () => {
-    if (geminiService.current && !aiChatSession.current) {
+    if (groqService.current) {
       try {
         console.log('Initializing chat session...');
-        aiChatSession.current = await geminiService.current.initChat(GEMINI_CHAT_MODEL, SYSTEM_INSTRUCTION);
+        await groqService.current.initChat(GROQ_CHAT_MODEL, SYSTEM_INSTRUCTION);
         console.log('Chat session initialized successfully');
       } catch (e) {
         console.error("Failed to initialize chat session:", e);
@@ -78,16 +76,16 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isInitializing && geminiService.current) {
+    if (!isInitializing && groqService.current) {
       initializeChat();
       fetchWOTD();
     }
   }, [isInitializing, initializeChat]);
 
   const fetchWOTD = async () => {
-    if (!geminiService.current) return;
+    if (!groqService.current) return;
     try {
-      const wotd = await geminiService.current.fetchWordOfTheDay();
+      const wotd = await groqService.current.fetchWordOfTheDay();
       setWordOfTheDay(wotd);
     } catch (e) {
       console.error("Failed to fetch Word of the Day:", e);
@@ -116,9 +114,9 @@ const App: React.FC = () => {
   };
 
   const translateAndAdd = async (japaneseText: string, sender: SenderType) => {
-    if (!geminiService.current) return;
+    if (!groqService.current) return;
     try {
-      const englishText = await geminiService.current.translateText(japaneseText, 'English');
+      const englishText = await groqService.current.translateText(japaneseText, 'English');
       addMessage(englishText, sender, 'english');
     } catch (e) {
       console.error(`Translation error for ${sender}:`, e);
@@ -127,19 +125,17 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (japaneseInput: string) => {
-    if (!japaneseInput.trim() || isLoading || !geminiService.current || !aiChatSession.current) {
+    if (!japaneseInput.trim() || isLoading || !groqService.current) {
       console.log('Cannot send message:', {
         hasInput: !!japaneseInput.trim(),
         isLoading,
-        hasGeminiService: !!geminiService.current,
-        hasChatSession: !!aiChatSession.current
+        hasGroqService: !!groqService.current
       });
       return;
     }
 
     console.log('Sending message:', japaneseInput);
-    console.log('Gemini service available:', !!geminiService.current);
-    console.log('Chat session available:', !!aiChatSession.current);
+    console.log('Groq service available:', !!groqService.current);
 
     setIsLoading(true);
     setError(null);
@@ -147,9 +143,9 @@ const App: React.FC = () => {
     await translateAndAdd(japaneseInput, SenderType.User);
 
     try {
-      const aiResponseJapanese = await geminiService.current.sendMessageToAI(aiChatSession.current, japaneseInput);
+      const aiResponseJapanese = await groqService.current.sendMessageToAI(japaneseInput);
       console.log('AI Response received:', aiResponseJapanese);
-      
+
       addMessage(aiResponseJapanese, SenderType.AI, 'japanese');
       if (speechService.current) {
         speechService.current.speakText(aiResponseJapanese, 'ja-JP');
@@ -262,7 +258,7 @@ const App: React.FC = () => {
           }`}>
             <p className="font-bold text-yellow-200 mb-2">APIキーの設定が必要です</p>
             <p className="text-yellow-100 text-sm">Create a <code className="bg-black/20 px-1 rounded">.env.local</code> file with:</p>
-            <code className="text-yellow-100 text-sm bg-black/20 p-2 rounded mt-2 block">GEMINI_API_KEY=your_api_key_here</code>
+            <code className="text-yellow-100 text-sm bg-black/20 p-2 rounded mt-2 block">GROQ_API_KEY=your_api_key_here</code>
           </div>
           <button 
             onClick={() => window.location.reload()}
@@ -304,38 +300,38 @@ const App: React.FC = () => {
 
       <div className="relative z-10 flex flex-col h-screen">
         {/* Header with glassmorphism */}
-        <header className={`backdrop-blur-xl p-4 sticky top-0 z-50 transition-all duration-300 border-b ${
-          darkMode 
-            ? 'bg-black/50 border-gray-800/50' 
+        <header className={`backdrop-blur-xl p-3 sm:p-4 sticky top-0 z-50 transition-all duration-300 border-b ${
+          darkMode
+            ? 'bg-black/50 border-gray-800/50'
             : 'bg-white/10 border-white/20'
         }`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-2 transition-all duration-300 ${
-                darkMode 
-                  ? 'bg-gray-900/50 border-gray-700/50' 
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-lg border-2 transition-all duration-300 ${
+                darkMode
+                  ? 'bg-gray-900/50 border-gray-700/50'
                   : 'bg-white/20 border-white/30'
               }`}>
-                <img 
-                  src={SAKURA_AVATAR_URL} 
-                  alt="Sakura AI" 
-                  className="w-12 h-12 rounded-full object-cover"
+                <img
+                  src={SAKURA_AVATAR_URL}
+                  alt="Sakura AI"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full object-cover"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.nextElementSibling!.textContent = '🌸';
                   }}
                 />
-                <span className="text-2xl hidden">🌸</span>
+                <span className="text-xl sm:text-2xl hidden">🌸</span>
               </div>
               <div>
-                <h1 className={`text-2xl md:text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
-                  darkMode 
-                    ? 'from-white to-gray-300' 
+                <h1 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
+                  darkMode
+                    ? 'from-white to-gray-300'
                     : 'from-white to-pink-100'
                 }`}>
                   Sakura AI
                 </h1>
-                <p className={`text-sm ${
+                <p className={`text-xs sm:text-sm hidden sm:block ${
                   darkMode ? 'text-gray-400' : 'text-white/90'
                 }`}>
                   あなたの日本語学習パートナー
@@ -348,21 +344,21 @@ const App: React.FC = () => {
         
         {/* Word of the Day */}
         {wordOfTheDay && (
-          <div className="mx-4 mt-4">
+          <div className="mx-2 sm:mx-3 md:mx-4 mt-1.5 sm:mt-2">
             <WordOfTheDayDisplay wordOfTheDay={wordOfTheDay} onSpeak={handleSpeakText} darkMode={darkMode} />
           </div>
         )}
-        
+
         {/* Error message */}
         {error && !error.includes("API Key") && (
-          <div className={`mx-4 mt-2 p-4 backdrop-blur-sm rounded-xl text-center border ${
-            darkMode 
-              ? 'bg-red-900/20 border-red-500/30 text-red-200' 
+          <div className={`mx-2 sm:mx-3 md:mx-4 mt-2 p-3 sm:p-4 backdrop-blur-sm rounded-xl text-center border text-sm sm:text-base ${
+            darkMode
+              ? 'bg-red-900/20 border-red-500/30 text-red-200'
               : 'bg-white/20 border-white/30 text-white'
           }`}>
-            {error} 
-            <button 
-              onClick={() => setError(null)} 
+            {error}
+            <button
+              onClick={() => setError(null)}
               className={`ml-2 font-bold underline transition-colors ${
                 darkMode ? 'hover:text-red-100' : 'hover:text-pink-100'
               }`}
@@ -373,9 +369,9 @@ const App: React.FC = () => {
         )}
 
         {/* Chat container */}
-        <div className={`flex-1 mx-4 mb-4 mt-2 backdrop-blur-xl rounded-2xl border shadow-2xl overflow-hidden ${
-          darkMode 
-            ? 'bg-gray-900/10 border-gray-800/50' 
+        <div className={`flex-1 mx-2 sm:mx-3 md:mx-4 mb-2 sm:mb-3 md:mb-4 mt-1.5 sm:mt-2 backdrop-blur-xl rounded-xl sm:rounded-2xl border shadow-2xl overflow-hidden ${
+          darkMode
+            ? 'bg-gray-900/10 border-gray-800/50'
             : 'bg-white/10 border-white/20'
         }`}>
           <ChatView

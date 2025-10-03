@@ -10,9 +10,9 @@ interface WordOfTheDayProps {
 
 export const WordOfTheDayDisplay: React.FC<WordOfTheDayProps> = ({ wordOfTheDay, onSpeak, darkMode }) => {
   return (
-    <div className={`backdrop-blur-xl rounded-2xl border shadow-2xl p-6 transition-all duration-300 hover:shadow-3xl hover:-translate-y-1 relative overflow-hidden group ${
-      darkMode 
-        ? 'bg-gray-900/20 border-gray-800/50' 
+    <div className={`backdrop-blur-xl rounded-xl border shadow-lg p-2 sm:p-3 transition-all duration-300 hover:shadow-xl relative overflow-hidden group ${
+      darkMode
+        ? 'bg-gray-900/20 border-gray-800/50'
         : 'bg-white/10 border-pink-300/20'
     }`}>
       {/* Animated background shimmer */}
@@ -23,114 +23,92 @@ export const WordOfTheDayDisplay: React.FC<WordOfTheDayProps> = ({ wordOfTheDay,
       }`} />
       
       {/* Header */}
-      <div className="text-center mb-6 relative z-10">
-        <h2 className={`text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-2 ${
-          darkMode 
-            ? 'from-white to-gray-300' 
+      <div className="text-center mb-2 relative z-10">
+        <h2 className={`text-xs sm:text-sm font-semibold bg-gradient-to-r bg-clip-text text-transparent ${
+          darkMode
+            ? 'from-white to-gray-300'
             : 'from-pink-600 to-purple-600'
         }`}>
-          今日の言葉 (Word of the Day)
+          今日の言葉
         </h2>
-        <div className={`w-16 h-px mx-auto ${
-          darkMode 
-            ? 'bg-gradient-to-r from-gray-600 to-gray-400' 
-            : 'bg-gradient-to-r from-pink-400 to-purple-400'
-        }`} />
       </div>
 
-      {/* Main word section */}
-      <div className="text-center mb-6 relative z-10">
-        <div className="inline-flex items-center gap-3 group/word">
-          <span className={`text-4xl sm:text-5xl font-black bg-gradient-to-r bg-clip-text text-transparent drop-shadow-lg ${
-            darkMode 
-              ? 'from-white to-gray-200' 
+      {/* Main word section - Horizontal layout on mobile */}
+      <div className="flex items-center justify-between mb-2 relative z-10">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className={`text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
+            darkMode
+              ? 'from-white to-gray-200'
               : 'from-pink-600 to-purple-600'
           }`}>
             {wordOfTheDay.word}
           </span>
-          <button 
-            onClick={() => onSpeak(wordOfTheDay.word, 'ja-JP')} 
-            className={`p-2 backdrop-blur-sm rounded-full transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 ${
-              darkMode 
-                ? 'bg-gray-800/30 hover:bg-gray-700/40 text-gray-200 hover:text-white focus:ring-blue-400' 
+          <button
+            onClick={() => onSpeak(wordOfTheDay.word, 'ja-JP')}
+            className={`p-1 sm:p-1.5 backdrop-blur-sm rounded-full transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-1 ${
+              darkMode
+                ? 'bg-gray-800/30 hover:bg-gray-700/40 text-gray-200 hover:text-white focus:ring-blue-400'
                 : 'bg-pink-100/20 hover:bg-pink-100/30 text-pink-700 hover:text-pink-800 focus:ring-pink-400'
             }`}
             aria-label={`Speak word ${wordOfTheDay.word}`}
           >
-            <SpeakerIcon className="w-5 h-5"/>
+            <SpeakerIcon className="w-3 h-3 sm:w-4 sm:h-4"/>
           </button>
         </div>
-        
-        <p className={`text-lg mt-2 font-medium ${
-          darkMode ? 'text-gray-300' : 'text-pink-700/70'
-        }`}>
-          [{wordOfTheDay.reading}]
-        </p>
-        
-        <p className={`text-base mt-1 font-medium ${
-          darkMode ? 'text-gray-400' : 'text-pink-600/60'
-        }`}>
-          {wordOfTheDay.meaning}
-        </p>
-      </div>
 
-      {/* Example section */}
-      <div className={`relative z-10 backdrop-blur-sm rounded-xl p-4 border ${
-        darkMode 
-          ? 'bg-black/20 border-gray-800/30' 
-          : 'bg-white/5 border-white/10'
-      }`}>
-        <p className={`text-sm font-semibold mb-3 flex items-center gap-2 ${
-          darkMode ? 'text-gray-200' : 'text-white/80'
-        }`}>
-          <span className={`w-2 h-2 rounded-full ${
-            darkMode 
-              ? 'bg-gradient-to-r from-blue-400 to-cyan-400' 
-              : 'bg-gradient-to-r from-pink-400 to-purple-400'
-          }`}></span>
-          例文 (Example):
-        </p>
-        
-        <div className="space-y-2">
-          <div className="flex items-start gap-2">
-            <p className={`text-base font-medium leading-relaxed ${
-              darkMode ? 'text-white' : 'text-pink-200'
-            }`}>
-              {wordOfTheDay.exampleJapanese}
-            </p>
-            <button 
-              onClick={() => onSpeak(wordOfTheDay.exampleJapanese, 'ja-JP')} 
-              className={`flex-shrink-0 p-1.5 rounded-full transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 mt-0.5 ${
-                darkMode 
-                  ? 'bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white focus:ring-blue-400' 
-                  : 'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white focus:ring-pink-400'
-              }`}
-              aria-label="Speak example sentence"
-            >
-              <SpeakerIcon className="w-4 h-4"/>
-            </button>
-          </div>
-          
-          <p className={`text-sm italic pl-2 border-l-2 ${
-            darkMode 
-              ? 'text-gray-400 border-gray-700/50' 
-              : 'text-white/50 border-white/20'
+        <div className="text-right">
+          <p className={`text-xs sm:text-sm font-medium ${
+            darkMode ? 'text-gray-300' : 'text-pink-700/70'
           }`}>
-            {wordOfTheDay.exampleEnglish}
+            {wordOfTheDay.reading}
+          </p>
+          <p className={`text-xs font-medium ${
+            darkMode ? 'text-gray-400' : 'text-pink-600/60'
+          }`}>
+            {wordOfTheDay.meaning}
           </p>
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className={`absolute top-4 right-4 text-6xl select-none pointer-events-none ${
-        darkMode ? 'text-gray-800/30' : 'text-pink-300/20'
+      {/* Example section - More compact */}
+      <div className={`relative z-10 backdrop-blur-sm rounded-lg p-1.5 sm:p-2 border ${
+        darkMode
+          ? 'bg-black/20 border-gray-800/30'
+          : 'bg-white/5 border-white/10'
+      }`}>
+        <div className="flex items-start gap-1 sm:gap-1.5">
+          <p className={`text-xs sm:text-sm font-medium leading-snug flex-1 ${
+            darkMode ? 'text-white' : 'text-pink-200'
+          }`}>
+            {wordOfTheDay.exampleJapanese}
+          </p>
+          <button
+            onClick={() => onSpeak(wordOfTheDay.exampleJapanese, 'ja-JP')}
+            className={`flex-shrink-0 p-0.5 sm:p-1 rounded-full transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-1 ${
+              darkMode
+                ? 'bg-gray-700/30 hover:bg-gray-600/40 text-gray-300 hover:text-white focus:ring-blue-400'
+                : 'bg-white/10 hover:bg-white/20 text-white/70 hover:text-white focus:ring-pink-400'
+            }`}
+            aria-label="Speak example sentence"
+          >
+            <SpeakerIcon className="w-3 h-3"/>
+          </button>
+        </div>
+
+        <p className={`text-xs italic mt-1 pl-2 border-l ${
+          darkMode
+            ? 'text-gray-400 border-gray-700/50'
+            : 'text-white/50 border-white/20'
+        }`}>
+          {wordOfTheDay.exampleEnglish}
+        </p>
+      </div>
+
+      {/* Decorative elements - smaller */}
+      <div className={`absolute top-1 right-1 sm:top-2 sm:right-2 text-2xl sm:text-3xl select-none pointer-events-none ${
+        darkMode ? 'text-gray-800/20' : 'text-pink-300/20'
       }`}>
         🌸
-      </div>
-      <div className={`absolute bottom-4 left-4 text-4xl select-none pointer-events-none ${
-        darkMode ? 'text-gray-800/20' : 'text-purple-300/20'
-      }`}>
-        ✨
       </div>
 
       <style jsx>{`

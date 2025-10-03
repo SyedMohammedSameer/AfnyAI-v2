@@ -52,11 +52,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Messages area with custom scrollbar */}
-      <div 
-        ref={chatContainerRef} 
-        className={`flex-1 overflow-y-auto p-6 space-y-6 ${
-          darkMode 
-            ? 'scrollbar-thin scrollbar-thumb-gray-700/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-600/70' 
+      <div
+        ref={chatContainerRef}
+        className={`flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6 ${
+          darkMode
+            ? 'scrollbar-thin scrollbar-thumb-gray-700/50 scrollbar-track-transparent hover:scrollbar-thumb-gray-600/70'
             : 'scrollbar-thin scrollbar-thumb-pink-400/20 scrollbar-track-transparent hover:scrollbar-thumb-pink-400/30'
         }`}
         style={{ background: 'transparent' }}
@@ -154,27 +154,27 @@ export const ChatView: React.FC<ChatViewProps> = ({
       </div>
 
       {/* Input area with glassmorphism */}
-      <div className={`p-6 border-t backdrop-blur-sm transition-all duration-300 ${
-        darkMode 
-          ? 'border-gray-800/50 bg-black/20' 
+      <div className={`p-3 sm:p-4 md:p-6 border-t backdrop-blur-sm transition-all duration-300 ${
+        darkMode
+          ? 'border-gray-800/50 bg-black/20'
           : 'border-pink-300/20 bg-white/5'
       }`}>
-        <form onSubmit={handleSubmit} className="flex items-center space-x-3">
+        <form onSubmit={handleSubmit} className="flex items-center space-x-2 sm:space-x-3">
           {/* Voice input button */}
           <button
             type="button"
             onClick={handleVoiceClick}
             disabled={isLoading}
-            className={`p-4 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 disabled:opacity-50 transform hover:scale-105 active:scale-95 ${
-              isRecording 
-                ? 'bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/25 animate-pulse focus:ring-red-400' 
+            className={`p-2.5 sm:p-3 md:p-4 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 disabled:opacity-50 transform hover:scale-105 active:scale-95 ${
+              isRecording
+                ? 'bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/25 animate-pulse focus:ring-red-400'
                 : darkMode
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-600/25 focus:ring-blue-400'
                   : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 shadow-lg shadow-pink-500/25 focus:ring-pink-400'
             }`}
             aria-label={isRecording ? "Recording... Click to stop" : "Start voice input"}
           >
-            <MicrophoneIcon className="w-6 h-6 text-white" />
+            <MicrophoneIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
 
           {/* Text input */}
@@ -184,9 +184,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="日本語でメッセージを入力..."
-              className={`w-full p-4 backdrop-blur-sm border rounded-2xl focus:ring-2 focus:border-transparent focus:outline-none transition-all duration-300 ${
-                darkMode 
-                  ? 'bg-gray-900/30 border-gray-700/30 focus:ring-blue-500 text-white placeholder-gray-400' 
+              className={`w-full p-2.5 sm:p-3 md:p-4 backdrop-blur-sm border rounded-xl sm:rounded-2xl focus:ring-2 focus:border-transparent focus:outline-none transition-all duration-300 text-sm sm:text-base ${
+                darkMode
+                  ? 'bg-gray-900/30 border-gray-700/30 focus:ring-blue-500 text-white placeholder-gray-400'
                   : 'bg-white/10 border-pink-300/20 focus:ring-pink-400 text-pink-800 placeholder-pink-600/60'
               }`}
               disabled={isLoading}
@@ -197,38 +197,38 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 }
               }}
             />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </div>
 
           {/* Send button */}
           <button
             type="submit"
             disabled={isLoading || !inputText.trim()}
-            className={`p-4 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-105 active:scale-95 ${
-              darkMode 
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white focus:ring-emerald-400 shadow-emerald-600/25' 
+            className={`p-2.5 sm:p-3 md:p-4 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transform hover:scale-105 active:scale-95 ${
+              darkMode
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white focus:ring-emerald-400 shadow-emerald-600/25'
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white focus:ring-blue-400 shadow-blue-500/25'
             }`}
             aria-label="Send message"
           >
             {isLoading && inputText ? (
-              <LoadingSpinner className="w-6 h-6" />
+              <LoadingSpinner className="w-5 h-5 sm:w-6 sm:h-6" />
             ) : (
-              <SendIcon className="w-6 h-6" />
+              <SendIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </button>
         </form>
 
         {/* Quick suggestions - only show when no messages */}
         {messages.length === 0 && (
-          <div className="mt-4 flex flex-wrap gap-2 justify-center">
+          <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2 justify-center">
             {['こんにちは', 'はじめまして', 'お元気ですか？', '日本語を練習したいです'].map((suggestion) => (
               <button
                 key={suggestion}
                 onClick={() => setInputText(suggestion)}
-                className={`px-3 py-1 text-sm backdrop-blur-sm rounded-full border transition-all duration-300 transform hover:scale-105 ${
-                  darkMode 
-                    ? 'bg-gray-800/20 hover:bg-gray-700/30 text-gray-300 hover:text-white border-gray-700/30' 
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm backdrop-blur-sm rounded-full border transition-all duration-300 transform hover:scale-105 ${
+                  darkMode
+                    ? 'bg-gray-800/20 hover:bg-gray-700/30 text-gray-300 hover:text-white border-gray-700/30'
                     : 'bg-pink-100/10 hover:bg-pink-100/20 text-pink-700/80 hover:text-pink-800 border-pink-300/20'
                 }`}
               >
